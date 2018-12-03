@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: php-wordpress
+  labels:
+    name: php-wordpress
+  namespace: devops
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels: 
+       name: php-wordpress
+    spec:
+      containers:
+      - name: php-wordpress
+        image: 192.168.1.156/library/php:5.4.45-fpm-v1
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: nginx-data
+          mountPath: /var/www/html
+        ports:
+        - containerPort: 9000
+      #imagePullSecrets:
+      #- name: harborkey1
+      volumes:
+      - name: nginx-data
+        persistentVolumeClaim:
+         claimName: nginx-data
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-wordpress 
+  labels: 
+    name: php-wordpress
+  namespace: devops
+spec:
+  ports:
+  - port: 9000
+    protocol: TCP
+    targetPort: 9000
+  selector:
+    name: php-wordpress

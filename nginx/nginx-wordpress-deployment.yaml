@@ -1,0 +1,55 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-wordpress
+  labels:
+    name: nginx-wordpress
+  namespace: devops
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+       name: nginx-wordpress
+    spec:
+      containers:
+      - name: nginx-wordpress
+        image: 192.168.1.156/library/nginx:1.12-v2
+        #image: 192.168.1.156/library/nginx:1.12
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: nginx-etc
+          mountPath: /etc/nginx/conf.d/
+        - name: nginx-data
+          mountPath: /usr/share/nginx/html
+        ports:
+        - containerPort: 80
+      #imagePullSecrets:
+      #- name: harborkey1
+      volumes:
+      - name: nginx-etc
+        configMap:
+          name: nginx-config
+          items:
+          - key: nginx.conf
+            path: nginx.conf
+      - name: nginx-data
+        persistentVolumeClaim:
+          claimName: nginx-data
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-wordpress
+  labels:
+   name: nginx-wordpress
+  namespace: devops
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+    name: http
+  selector:
+    name: nginx-wordpress

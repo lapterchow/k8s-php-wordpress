@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wordpress
+  namespace: devops
+spec:
+  rules:
+  - host: wordpress.test.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nginx-wordpress
+          servicePort: 80
