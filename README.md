@@ -1,6 +1,6 @@
 # 先决条件
 
-配置好nfs或者ceph共享
+配置好nfs或者ceph共享,注意nginx、php、nfs运行的用户需要一致
 ```bash
 $ cd nfs
 $ kubectl apply -f ./
